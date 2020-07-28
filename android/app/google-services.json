@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "837066318450",
+    "firebase_url": "https://listier-a-react-native-app.firebaseio.com",
+    "project_id": "listier-a-react-native-app",
+    "storage_bucket": "listier-a-react-native-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837066318450:android:7c35179c8572a857ec18eb",
+        "android_client_info": {
+          "package_name": "com.listier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "837066318450-ml752voh6t0is0jq4mrgoisi5sq7hkev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBy0s3Agd4IGTuHK8dYJ0pUdrqRsUlgeBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "837066318450-ml752voh6t0is0jq4mrgoisi5sq7hkev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
