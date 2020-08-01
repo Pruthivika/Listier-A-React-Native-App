@@ -10,7 +10,8 @@ const styles = StyleSheet.create({
    },
    container:{
      flex:1,
-     padding:30
+     paddingLeft:30,
+     
    },
   tasks:{
     paddingBottom:15

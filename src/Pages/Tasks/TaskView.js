@@ -1,53 +1,137 @@
-import React,{useState} from 'react'
-import { StyleSheet, Text, View,TouchableOpacity,TextInput,TouchableWithoutFeedback,Keyboard  } from 'react-native'
+import React,{useState,useEffect} from 'react'
+import { StyleSheet, Text, View,TouchableOpacity,TextInput,TouchableWithoutFeedback,Keyboard,Dimensions  } from 'react-native'
 import {COLORS} from '../../Constants'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Timer from '../../Components/Timer/Timer';
+import firestore from '@react-native-firebase/firestore';
+import DoneFloat from '../../Components/Button/donefloat';
+import Floatingbutton from '../../Components/Button/floatingbutton';
+import { Header } from 'react-native-elements';
 
+const window = Dimensions.get('window');
+const screen=Dimensions.get('screen');
 
 export default function TaskView({ route,navigation}) {
     const { title } = route.params;
-    const des = "";
+    const {mykey} = route.params;
+    const {page} =route.params;
+    
+    // const des = "";
     const [timeButton,setButton]=useState(false)
+    const [loading, setLoading] = useState(true); // Set loading to true on component mount
+    const [task, setTask] = useState({});
+    const [done, setDone] = useState(false);
+
+    const dbRef = firestore().collection('Tasks');
+    
+
+    const setComplete=()=>{
+      setDone(true);  
+      dbRef.doc(mykey).update({Completed:true,CompletedAt:new Date()});
+      navigation.goBack();
+    }
+
+    // const DeleteTask=()=>{
+        
+    //     dbRef.doc(mykey).delete();
+    //     navigation.goBack();
+    //   }
+
+    const changePage= ()=>{
+        if(page=='All Tasks'){
+            navigation.navigate('All Tasks');
+        }
+        else if(page=='TaskMain'){
+            navigation.navigate('All Tasks');
+        }else{
+            navigation.goBack();
+        }
+    }
+
+    const FormatDate = (dateobj)=>{
+        var month = dateobj.getUTCMonth() + 1; //months from 1-12
+        var day = dateobj.getUTCDate();
+        var year = dateobj.getUTCFullYear();
+        var mydate =year + "/" + month + "/" + day;
+        return mydate;
+    }
+
+    
+    useEffect(() => {
+        const subscriber = dbRef
+          .doc(mykey)
+          .onSnapshot(documentSnapshot => {
+           
+            setTask(documentSnapshot.data())
+          });
+    
+        // Stop listening for updates when no longer required
+        return () => subscriber();
+      }, [mykey]);
+
+
+      
+
+        //  tasks.map(x=>{
+        //      var k = mykey;
+        //      if(x.key == x.k){
+                
+        //         Setcomplete(x.Completed);
+        //         Setcreate(x.CreatedDate) ;
+        //         Setdesc(x.Description);
+        //         Setdue(x.DueDate);
+                 
+        //      }
+        //     })
+
+    
+
     
     return (
-        <TouchableWithoutFeedback onPress={()=>{Keyboard.dismiss()}}>
+
+       
         <View style={styles.container}>
+            <Header
+      containerStyle={{backgroundColor:COLORS.white}}
+      placement="left"
+      centerComponent={{ text: '', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
+      leftComponent={<Icon name="long-arrow-left" size={20} color={COLORS.black}  onPress={()=>{navigation.goBack()}}></Icon>}
+    //   rightComponent={<Icon name="trash" size={25} color={COLORS.primary} onPress={DeleteTask}></Icon>}
+    />
+        
            <View style={styles.card}>
                
                <Text style={styles.title}>{title}</Text>
-             {timeButton?
-                 <View style={styles.timedisp}>
-                 <Text>Tracking |</Text>
-                 <Text>00:05:50</Text>
-               </View>
-               :null
-             }
+             
+             <Timer  mykey={mykey} done={done}/>
+               {/* <TouchableOpacity onPress={()=>{setButton(!timeButton)}} style={styles.button}>
+                   <Text style={styles.start}>Start</Text>
             
-
-               <TouchableOpacity onPress={()=>{setButton(!timeButton)}} style={styles.button}>
-                   <Text>Start</Text>
-               </TouchableOpacity>
+            </TouchableOpacity> */}
+            
+           
            </View>
+           
           <View style={styles.card2}>
               <Text style={styles.subtitle}>Description</Text>
-              <TextInput
-              multiline={true}
-              placeholder={"Add your note"}
-              blurOnSubmit={true}
-              numberOfLines={6}
-              maxLength={60}
-              
-            style={styles.desc}
-      onChangeText={()=>null}
-      
-    />
-              <Text>
-                  
-                  {des?des:null}
-              </Text>
+            <Text style={styles.text}>{task.Description?task.Description:null}</Text>
+            <Text style={styles.subtitle}>Due At</Text>
+            <Text style={styles.text}>{task.DueDate?FormatDate(task.DueDate.toDate()):null}</Text>
+            <Text style={styles.subtitle}>Created At</Text>
+            <Text style={styles.text}>{task.CreatedDate?FormatDate(task.CreatedDate.toDate()):null}</Text>
+          
+           
           </View>
+         
+          <TouchableOpacity style={styles.button} onPress={setComplete}>
+      <Text style={styles.btntext}>Task Finished !</Text>
+      
+    </TouchableOpacity>
+    
+        
         </View>
-        </TouchableWithoutFeedback>
+        
+        
     )
 }
 
@@ -59,7 +143,7 @@ const styles = StyleSheet.create({
         elevation:6,
         // height:70,
         padding:10,
-        paddingLeft:30,
+        
         backgroundColor:COLORS.white,
         flexDirection:'column',
         alignItems:'center'
@@ -71,21 +155,25 @@ const styles = StyleSheet.create({
         alignSelf:'center'
     },
     subtitle:{
-        fontSize:18,
+        fontSize:20,
         fontFamily:'Choco',
         bottom:0
         
     },
     button:{
         
-        borderColor:COLORS.primary,
-        borderRadius:20,
-        borderWidth:2,
-        width:120,
-        height:40,
-        alignItems:'center',
-        justifyContent:'center',
-        marginTop:20
+        backgroundColor:COLORS.primary,
+    // borderColor:COLORS.primary,
+    borderRadius:70,
+    // borderWidth:2,
+    width:200,
+    height:50,
+    alignItems:'center',
+    justifyContent:'center',
+    marginTop:20,
+    alignSelf:'center',
+    marginBottom:20,
+    marginLeft:20
 
 
     },
@@ -93,11 +181,12 @@ const styles = StyleSheet.create({
         elevation:3,
         height:100,
         padding:10,
-        paddingLeft:30,
+        
         backgroundColor:COLORS.white,
         flexDirection:'column',
         marginTop:10,
-        flex:1
+        flex:1,
+        
     },
     close:{
         alignSelf:'flex-start',
@@ -108,10 +197,12 @@ const styles = StyleSheet.create({
     },
     desc:{
          height: 100,
-         borderBottomColor:COLORS.darkerGrey,
-         borderBottomWidth:2,
-         paddingTop:0,
-         top:0
+         borderBottomColor:COLORS.lightgrey,
+         borderBottomWidth:1,
+         paddingTop:10,
+         top:0,
+         
+    
    
     },
     timedisp:{
@@ -119,5 +210,37 @@ const styles = StyleSheet.create({
        marginTop:20,
        justifyContent:'space-between',
        alignContent:'space-around'
+    },
+    start:{
+        fontFamily:'Choco',
+        fontSize:20,
+        color:COLORS.white
+    },
+    text:{
+        fontFamily:"Choco",
+        fontSize:16,
+        color:COLORS.darkerGrey,
+        marginBottom:20
+    },
+    button:{
+     
+        backgroundColor:COLORS.primary,
+        // borderColor:COLORS.primary,
+        borderRadius:20,
+        // borderWidth:2,
+        width:200,
+        height:40,
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:20,
+        alignSelf:'center',
+        marginBottom:20
+    
+    
+    },
+    btntext:{
+      color:COLORS.white,
+      fontSize:18,
+      fontFamily:'Choco'
     }
 })

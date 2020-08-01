@@ -1,164 +1,183 @@
-import React, {useState} from 'react';
-// import {View, Text, FlatList} from 'react-native';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import { Header,Button } from 'react-native-elements';
-// import Icon from 'react-native-vector-icons/FontAwesome';
-//  import {SafeAreaView } from 'react-native-safe-area-context';
- import { StyleSheet, Text, View, Image ,FlatList, Button, requireNativeComponent,SafeAreaView, ScrollView,TouchableOpacity} from 'react-native';
-import LiCard from '../../Components/Card';
-import ViewCard from '../../Components/ViewCard';
-import AddCard from '../../Components/AddCard/addCard';
+import React,{useState,useEffect} from 'react';
+import { StyleSheet, Text, View,FlatList,TouchableOpacity,Dimensions, Alert, ScrollView } from 'react-native';
+import MyHeader from '../../Components/Header';
+import { Header } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import styles from './styles';
+
 import Floatingbutton from '../../Components/Button/floatingbutton';
+import Accordian from '../../Components/ExpandableList';
 import {COLORS} from '../../Constants';
-import AddList from '../AddList/addList'
+
+import AddList from '../AddList/addList';
 
 
-//firebase
 import firestore from '@react-native-firebase/firestore';
-import { min } from 'moment';
+// import { NavigationContainer } from '@react-navigation/native';
+// import { createStackNavigator } from '@react-navigation/stack';
 
 
 
- 
-export default function Tasks({navigation}){
-  const [todos,setTodos]=useState([
-    {text:'buy coffee',key:'1'},
-    {text:'create an app',key:'2'},
-    {text:'play on the switch',key:'3'},
-    {text:'play on the switch',key:'4'},
-    {text:'play on the switch',key:'5'},
-    {text:'play on the switch',key:'6'},
-    {text:'play on the switch',key:'7'},
-    {text:'play on the switch',key:'8'},
-    {text:'pln the switch',key:'9'}
+const window = Dimensions.get('window');
 
-  ]);
-
-
-  // firestore()
-  // .collection('Tasks')
-  // .get()
-  // .then(querySnapshot => {
-  //   console.log('Total lists: ', querySnapshot.size);
-    
-  //   querySnapshot.forEach(documentSnapshot => {
-  //     console.log('ID: ', documentSnapshot.id, documentSnapshot.data());
-  //     setTodos((prevTodos)=>{return [documentSnapshot.data(),...prevTodos
-  //     ]});
-
-  //     console.log(todos);
+export default function Tasks({navigation}) {
   
-  //   });
-  // });
-   
-
-
-
+  const [tasks, setTasks] = useState([]); 
+  // useEffect(() => {
+  //   var g = ""
+  //   switch(true){
+  //     case hours > 0 && hours<12 :g = "hi"; break;
+  //     case hours >= 12 && hours < 17:;g = "h";break;
+  //     case hours >=17 && hours < 20 :g = "lhi";break;
+  //     default : console.log("hapspa");break;
+  //  }
+  //  setGreet(g);
   
 
+  // },[]);
+  //const today = new Date();
+  // const timestamp = new 
+  const today = new Date();
+  const mytasks = [];
+  const[greet,setGreet]=useState("");
+  var hours = today.getHours();
+  const FormatDate = (dateobj)=>{
+    var month = dateobj.getUTCMonth() + 1; //months from 1-12
+    var day = dateobj.getUTCDate();
+    var year = dateobj.getUTCFullYear();
+    var mydate =year + "/" + month + "/" + day;
+    return mydate;
+}
 
-  const pressHandler = (key)=>{
-    setTodos((prevTodos)=>{
-      return prevTodos.filter(todo=>todo.key !=key);
-    });
-  }
 
-
- const submitHandler = (text)=>{
-   if(text.length>3){
-    setTodos((prevTodos)=>{
-      return[
-        {text:text,key:Math.random().toString()},
-        ...prevTodos
-      ];
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('Tasks')
+      .where('Completed', '==',false)
+      .onSnapshot(querySnapshot => {
+        const tasks = [];
+  
+        querySnapshot.forEach(documentSnapshot => {
+          tasks.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
+        });
+      
+        setTasks(tasks);
        
-    });
-   }
+      });
 
- }
-//     var Title=[]; 
-//   const mine=  firestore()
-// .collection('TestCol')
-// .get()
-// .then(querySnapshot => {
-//   console.log('Total lists: ', querySnapshot.size);
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
+
+  {
+    tasks.map(x=>{
+      if(x.DueDate){
+          var xdate = x.DueDate.toDate();
+          var minedate = FormatDate(xdate).toString();
+          var date  = FormatDate(today).toString();
+
+          if(minedate==date){
+              mytasks.push(x);
+          }
+          
+      }
+    })
+  }
   
-//   querySnapshot.forEach(documentSnapshot => {
-//     console.log('ID: ', documentSnapshot.id, documentSnapshot.data());
-//     Title.push(documentSnapshot.data().title);
-//     console.log(Title);
-
-//   });
-// });
+ // console.log(greet)
+  
+  
  
-  return(
+ 
+  
+
+
+
+    const addTask=()=>{
+     navigation.navigate('Form')
+    }
+    const [topics,setTopics]=useState([
+        {col:COLORS.yellow  ,icon:"sun-o",text:'My Day',key:'1'},
+        // {col:COLORS.yellow,icon:"star",text:'Important',key:'2'},
+        {col:COLORS.green,icon:"calendar-o",text:'Planned',key:'2'},
+        {col:COLORS.red,icon:"asterisk",text:'All',key:'3'},
+        // {col:COLORS.primaryGreen,icon:"check",text:'Completed',key:'4'},
+        {col:COLORS.blue,icon:"thumb-tack",text:'Tasks',key:'5'}
+       
+    
+      ]);
+    return (
+      // <ScrollView>
+        <View style={{flex:1}}>
+        <Header
+      containerStyle={styles.header}
+      placement="left"
+      centerComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
+      
+      rightComponent={<Icon name="bars" size={20} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
+    />
+    
+    {/* <View style={styles.cardtop}>
+       <Text style={{fontFamily:"Choco",fontSize:40}}>HI </Text>
+    </View> */}
+    <View style={{flexDirection:'row'}}>
+    <Icon style={{paddingTop:20,paddingLeft:20}} name="sun-o" size={30} color={COLORS.yellow}/>
+   <Text style={styles.subtitle}>My Day</Text>
+    </View>
+     
+    <FlatList
+          data={mytasks}
+          // ListFooterComponent={
+          //   <AddCard submitHandler={submitHandler}/>}
+          renderItem={({item}) => (
+            //  <LiCard item={item} pressHandler={pressHandler}/>
+            
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('View', {title: item.Title,mykey:item.key,page:'TaskMain'});
+              }}
+              style={{justifyContent:'space-between'}}>
+              <View  style={{flexDirection: 'row'}}>
+              
+            
+                <Icon color={COLORS.primary} name="circle" size={10} style={{alignSelf:'center',padding:20}} />
+                <Text style={styles.minetext}>{item.Title}</Text>
+             
+            <Text style={{alignSelf:'center',marginTop:10}}>{item.Duration?item.Duration:null}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+  {/* <FlatList
+        data={topics}
         
-
-
-
-   <FlatList
-        data={todos}
-        showsVerticalScrollIndicator={false}
-        
+        style={styles.topicFlatlist}
         // ListFooterComponent={        
         //   <AddCard submitHandler={submitHandler}/>}
         renderItem={({item})=>(
       //  <LiCard item={item} pressHandler={pressHandler}/>
-      <TouchableOpacity onPress={()=>pressHandler(item.key)}>
-  <Text style={styles.item}>{item.text}</Text>
+      <TouchableOpacity onPress={()=>{navigation.navigate('List',{ name:item.text,catKey:item.key})}} style={styles.Topic} >
+          <View style={{flexDirection:'row'}}>
+          <Icon name={item.icon}  color={item.col}  size={18} style={styles.ListIcon}></Icon>
+  <Text style={styles.topicText}>{item.text}</Text>
+          </View>
+   
+  
+  <Icon name="angle-right" color={COLORS.black} size={18}></Icon>
 </TouchableOpacity>
         )}
         
-       />
-
-// {/* <Button title="click me" onPress={}/> */}
-
-
-
-
-
-       
-
+       /> */}
+    <Floatingbutton  onpressfun={addTask}/>
+   
  
-//   // </SafeAreaView>
- 
+
+        </View>
      
-);
+    )
 }
 
-const styles = StyleSheet.create({
-   mylist:{
-       flexDirection:'column',
-       justifyContent:'space-around',
-       alignContent:'center'
-   },
-   container:{
-  
-    padding:20,
-    flexDirection:'column',
-    flexWrap:'wrap',
-   
-   
-    
 
-
-  },
-  safeAreaView:{
-    backgroundColor:"#ffffff",
-    flex: 1
-},
-  item:{
-    padding:30,
-    marginTop:10,
-    borderColor:COLORS.black,
-    borderStyle:'dashed',
-    borderRadius:10,
-    borderWidth:1
-  }
-  
-})
-
-// const State = {
-//  List:{}
-// }

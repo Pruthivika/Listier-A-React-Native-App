@@ -25,7 +25,7 @@ export default function TaskMain({navigation}) {
         // {col:COLORS.yellow,icon:"star",text:'Important',key:'2'},
         {col:COLORS.green,icon:"calendar-o",text:'Planned',key:'2'},
         {col:COLORS.red,icon:"asterisk",text:'All',key:'3'},
-        {col:COLORS.primaryGreen,icon:"check",text:'Completed',key:'4'},
+        // {col:COLORS.primaryGreen,icon:"check",text:'Completed',key:'4'},
         {col:COLORS.blue,icon:"thumb-tack",text:'Tasks',key:'5'}
        
     
@@ -35,8 +35,8 @@ export default function TaskMain({navigation}) {
         <Header
       containerStyle={styles.header}
       placement="left"
-      centerComponent={{ text: 'Tasks', style: { color: '#fff' , fontSize:20 ,fontFamily:'Choco'} }}
-      leftComponent={<Icon name="home" size={26} color="white" onPress={() =>navigation.navigate('Home')}></Icon>}
+      centerComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
+      
       rightComponent={<Icon name="bars" size={20} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
     />
  

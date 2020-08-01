@@ -11,7 +11,7 @@ export default function Settings({navigation}) {
       containerStyle={{backgroundColor:COLORS.primary}}
       placement="left"
       centerComponent={{ text: 'Settings', style: { color: '#fff' , fontSize:20 ,fontFamily:'Choco'} }}
-      leftComponent={<Icon name="home" size={26} color="white" onPress={() =>navigation.navigate('Home')}></Icon>}
+      leftComponent={<Icon name="long-arrow-left" size={20} color={COLORS.white}  onPress={()=>navigation.goBack()}></Icon>}
       rightComponent={<Icon name="bars" size={20} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
     />
             <Text>hi this is settings</Text>

@@ -12,7 +12,11 @@ export default function MyCheckbox (){
     //     }
     // }
 
-    
+    // const onmyclick=()=>{
+
+    // }
+
+    // console.log(id);
   
 
         return (

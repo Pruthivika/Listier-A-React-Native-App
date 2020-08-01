@@ -44,6 +44,12 @@ const styles = StyleSheet.create({
       fontSize:15,
       marginTop:15
     },
+    minetext:{
+      color: COLORS.black,
+      fontSize:20,
+      marginTop:15,
+      fontFamily:"Choco"
+    },
     wrapbut:{
       flexDirection:'column',
       justifyContent:'space-between',
@@ -92,6 +98,22 @@ const styles = StyleSheet.create({
     arrow:{
      
       alignSelf:'flex-end'
+    },
+    cardtop:{
+      paddingTop:20,
+      paddingBottom:30,
+      flexDirection:'column',
+      backgroundColor:COLORS.lightgrey,
+      elevation:5,
+      marginBottom:10,
+      paddingHorizontal:20,
+    },
+    subtitle:{
+      fontFamily:"Choco",
+      padding:20,
+      fontSize:25,
+      
+
     }
     
    

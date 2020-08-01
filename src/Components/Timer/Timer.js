@@ -1,6 +1,8 @@
 import React,{useState,useEffect} from 'react';
 import {StyleSheet,Text,View,StatusBar,TouchableOpacity,Dimensions} from 'react-native';
-
+import {COLORS} from '../../Constants';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import firestore from '@react-native-firebase/firestore';
 
 const screen = Dimensions.get('window');
 const formatNumber = number =>`0${number}`.slice(-2);
@@ -9,13 +11,19 @@ const getRemaining = (time)=>{
     const secs=time-mins*60;
     return {mins:formatNumber(mins),secs:formatNumber(secs)};
 }
-export default function Timer({variant}){
+export default function Timer({variant,mykey,done}){
+    const dbRef = firestore().collection('Tasks');
     const [remainingSecs,setRemainingSecs]=useState(0);
     const [isActive,setIsActive] = useState(variant ? true : false); 
+    const [timeButton,setButton]=useState(false)
     const {mins,secs} = getRemaining(remainingSecs);
+    // const [interval,setInterval]=useState("");
+    const mine=`${mins}:${secs}`;
 
-  
-
+     if(done){dbRef.doc(mykey).update({Duration:mine});}
+        
+      
+     
     useEffect(()=>{
         let interval = null;
         if(isActive){
@@ -28,53 +36,79 @@ export default function Timer({variant}){
         return ()=> clearInterval(interval);
     },[isActive,remainingSecs]);
 
-
+    
     
     return(
         <View style={styles.container}>
             <StatusBar barStyle="light-content"/>
-    <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>
-            <TouchableOpacity onPress={()=>{ setIsActive(!isActive)}} style={styles.button}>
+            {timeButton?  <View style={{flexDirection:'row', marginTop:20}}>
+            <Text style={styles.tracking}>Tracking |</Text>
+        
+    <Text style={styles.timerText}>{mine}</Text>
+    <View style={{flexDirection:'row',alignSelf:'center',paddingBottom:20}}>
+        <Icon onPress={()=>{setRemainingSecs(0); setIsActive(false);}} color={COLORS.primary} size={25} name="repeat"></Icon>
+    </View>
+    </View>:null}
+          
+            <TouchableOpacity onPress={()=>{setButton(true); setIsActive(!isActive)}} style={styles.button}>
                 <Text style={styles.buttonText}>{isActive ? 'Pause':'Start'}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>{setRemainingSecs(0); setIsActive(false);}} style={[styles.button,styles.buttonReset]}>
+            {/* <TouchableOpacity onPress={()=>{setRemainingSecs(0); setIsActive(false);}} style={[styles.button,styles.buttonReset]}>
                 <Text style={[styles.buttonText,styles.buttonTextReset]}>Reset</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container:{
-        flex:1,
-        backgroundColor:'#07121b',
-        alignItems:'center',
-        justifyContent:'center'
-        
+   alignItems:'center'
     },
     button:{
-        width:screen.width/2,
-        height:screen.width/2,
-        borderRadius:screen.width/2,
+        
+        backgroundColor:COLORS.primary,
+        // borderColor:COLORS.primary,
+        borderRadius:70,
+        // borderWidth:2,
+        width:200,
+        height:50,
         alignItems:'center',
         justifyContent:'center',
-        borderColor:'#b9aaff',
-        borderWidth:10
+       
+        alignSelf:'center',
+        marginBottom:20,
+        marginTop:20
+        
     },
     buttonText:{
-        fontSize:45,
-        color:'#b9aaff'
+        fontFamily:'Choco',
+        fontSize:20,
+        color:COLORS.white
     },
     timerText:{
-        color:'#fff',
-        fontSize:90,
-        marginBottom:20
+        color:COLORS.primary,
+        fontSize:20,
+        marginBottom:20,
+        marginRight:40,
+        alignSelf:'center',
+        fontFamily:'Choco'
     },
     buttonReset:{
         marginTop:20,
         borderColor:"#ff851b"
     },
     buttonTextReset:{
-        color:"#ff851b"
-    }
+        fontFamily:'Choco',
+        fontSize:20,
+        color:COLORS.white
+    },
+    tracking:{
+        color:COLORS.transparentPrimary,
+        fontSize:15,
+        marginBottom:20,
+        alignSelf:'center',
+        fontFamily:'Choco',
+    },
+    
+
 });

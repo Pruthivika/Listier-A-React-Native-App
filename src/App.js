@@ -11,6 +11,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Testfile from './Components/Testo/testfile';
 import Tasks from './Pages/Tasks/tasks';
 import Settings from './Pages/Settings/settings';
+import Completed from './Pages/Completed/completed';
+import Alltasks from './Pages/AllTasks/Alltasks';
 
 
 import ShoppingStack from './routes/ShoppingStack';
@@ -64,49 +66,49 @@ function TaskScreen({ navigation }) {
 //   );
 // }
 
-function MainScreen({ navigation }) {
-  const onPressTask = () => navigation.navigate('Tasks');
-  const onPressShop = () => navigation.navigate('Shopping List');
+// function MainScreen({ navigation }) {
+//   const onPressTask = () => navigation.navigate('Tasks');
+//   const onPressShop = () => navigation.navigate('Shopping List');
 
-  return (
-    <View>
-       <Header 
-       containerStyle={styles.header}
-  placement="left"
-  leftComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25 } }}
-  rightComponent={<Icon name="bars" size={20} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
-/>
+//   return (
+//     <View>
+//        <Header 
+//        containerStyle={styles.header}
+//   placement="left"
+//   leftComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25 } }}
+//   rightComponent={<Icon name="bars" size={20} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
+// />
 
-<Image 
+// <Image 
 
-source={require('../assets/ui/frontpic.png')}
-style={styles.image}
-></Image>
-<Text style={styles.info}>Add your Grocery list or tasks below...</Text>
+// source={require('../assets/ui/frontpic.png')}
+// style={styles.image}
+// ></Image>
+// <Text style={styles.info}>Add your Grocery list or tasks below...</Text>
 
-<View style={styles.wrapper}>
+// <View style={styles.wrapper}>
  
-<TouchableHighlight underlayColor={COLORS.transparentPrimary}  style={styles.button} onPress={onPressShop} >
-        <View style={styles.wrapbut}>
-          <Icon name="shopping-bag" size={25}  color={COLORS.primary}></Icon>
-          <Text style={styles.text}>Shopping List</Text>
-        </View>
-      </TouchableHighlight>
+// <TouchableHighlight underlayColor={COLORS.transparentPrimary}  style={styles.button} onPress={onPressShop} >
+//         <View style={styles.wrapbut}>
+//           <Icon name="shopping-bag" size={25}  color={COLORS.primary}></Icon>
+//           <Text style={styles.text}>Shopping List</Text>
+//         </View>
+//       </TouchableHighlight>
 
-      <TouchableHighlight underlayColor={COLORS.transparentPrimary} style={styles.button} onPress={onPressTask} >
-        <View style={styles.wrapbut}>
-        <Icon name="tasks" size={25}  color={COLORS.primary}></Icon>
-        <Text style={styles.text}>Tasks</Text>
+//       <TouchableHighlight underlayColor={COLORS.transparentPrimary} style={styles.button} onPress={onPressTask} >
+//         <View style={styles.wrapbut}>
+//         <Icon name="tasks" size={25}  color={COLORS.primary}></Icon>
+//         <Text style={styles.text}>Tasks</Text>
           
-        </View>
-      </TouchableHighlight>
+//         </View>
+//       </TouchableHighlight>
 
-</View>
+// </View>
 
-    </View>
+//     </View>
   
-  );
-}
+//   );
+// }
 
 
 function TestScreen({ navigation }) {
@@ -143,14 +145,18 @@ export default class App extends React.Component {
   render() {
       return (
         <SafeAreaProvider>
-        <StatusBar backgroundColor={COLORS.black}/>
-        <NavigationContainer>
+        {/* <StatusBar backgroundColor={COLORS.black}/> */}
+        <NavigationContainer  >
         
-      <Drawer.Navigator drawerContentOptions={{activeTintColor:COLORS.transparentPrimary,labelStyle:{color:COLORS.transparentBlack,fontFamily:'Choco'}}} initialRouteName="Home">
-        <Drawer.Screen name="Home" component={MainScreen} />
-        <Drawer.Screen name="Shopping List" component={ShoppingStack} />
-        <Drawer.Screen name="Tasks" component={TaskStack} />
+      <Drawer.Navigator drawerContentOptions={{activeTintColor:COLORS.transparentPrimary,labelStyle:{color:COLORS.transparentBlack,fontFamily:'Choco'}}} initialRouteName="Tasks">
+     
+
+        {/* <Drawer.Screen name="Shopping List" component={ShoppingStack} /> */}
+        <Drawer.Screen name="Home" component={TaskStack} />
+        <Drawer.Screen name="All Tasks" component={Alltasks}  options={{headerShown:false}}/>
         <Drawer.Screen name="Settings" component={Settings} />
+        <Drawer.Screen name="Completed" component={Completed} />
+
         {/* <Drawer.Screen name="Test" component={TestScreen} /> */}
       </Drawer.Navigator>
     </NavigationContainer>
