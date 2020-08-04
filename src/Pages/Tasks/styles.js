@@ -101,20 +101,28 @@ const styles = StyleSheet.create({
     },
     cardtop:{
       paddingTop:20,
-      paddingBottom:30,
+      // paddingBottom:10,
       flexDirection:'column',
-      backgroundColor:COLORS.lightgrey,
+      backgroundColor:COLORS.white,
       elevation:5,
       marginBottom:10,
       paddingHorizontal:20,
+      alignItems:'center',
+      justifyContent:'center',paddingBottom:25
     },
     subtitle:{
       fontFamily:"Choco",
       padding:20,
-      fontSize:25,
+      fontSize:22,
+
       
 
-    }
+    },
+    tinyLogo:{
+      height:80,
+      width:80,
+      marginBottom:20
+  }
     
    
   });

@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import { StyleSheet, Text, View,TouchableOpacity,TextInput,TouchableWithoutFeedback,Keyboard,Dimensions  } from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity,TextInput,TouchableWithoutFeedback,Keyboard,Dimensions,ToastAndroid   } from 'react-native'
 import {COLORS} from '../../Constants'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Timer from '../../Components/Timer/Timer';
@@ -7,28 +7,31 @@ import firestore from '@react-native-firebase/firestore';
 import DoneFloat from '../../Components/Button/donefloat';
 import Floatingbutton from '../../Components/Button/floatingbutton';
 import { Header } from 'react-native-elements';
-
+import auth from '@react-native-firebase/auth';
 const window = Dimensions.get('window');
 const screen=Dimensions.get('screen');
 
 export default function TaskView({ route,navigation}) {
+
     const { title } = route.params;
     const {mykey} = route.params;
-    const {page} =route.params;
+    const {id} =route.params;
     
+    // const Userid = auth().currentUser.uid;
     // const des = "";
     const [timeButton,setButton]=useState(false)
     const [loading, setLoading] = useState(true); // Set loading to true on component mount
     const [task, setTask] = useState({});
     const [done, setDone] = useState(false);
 
-    const dbRef = firestore().collection('Tasks');
+    const dbRef = firestore().collection('Users').doc(id).collection('Tasks');
     
 
     const setComplete=()=>{
       setDone(true);  
       dbRef.doc(mykey).update({Completed:true,CompletedAt:new Date()});
-      navigation.goBack();
+      ToastAndroid.show("Checked Out", ToastAndroid.SHORT);
+      navigation.navigate('TaskMain');
     }
 
     // const DeleteTask=()=>{
@@ -95,7 +98,7 @@ export default function TaskView({ route,navigation}) {
       containerStyle={{backgroundColor:COLORS.white}}
       placement="left"
       centerComponent={{ text: '', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
-      leftComponent={<Icon name="long-arrow-left" size={20} color={COLORS.black}  onPress={()=>{navigation.goBack()}}></Icon>}
+      leftComponent={<Icon name="long-arrow-left" size={20} color={COLORS.black}  onPress={()=>{navigation.pop()}}></Icon>}
     //   rightComponent={<Icon name="trash" size={25} color={COLORS.primary} onPress={DeleteTask}></Icon>}
     />
         

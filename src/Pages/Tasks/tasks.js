@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import { StyleSheet, Text, View,FlatList,TouchableOpacity,Dimensions, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View,FlatList,TouchableOpacity,Dimensions, Alert, ScrollView, Button,Image,ToastAndroid } from 'react-native';
 import MyHeader from '../../Components/Header';
 import { Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -13,15 +13,25 @@ import AddList from '../AddList/addList';
 
 
 import firestore from '@react-native-firebase/firestore';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
+
+
+import auth from '@react-native-firebase/auth';
 
 
 
 const window = Dimensions.get('window');
-
 export default function Tasks({navigation}) {
+  const showToast = () => {
+    ToastAndroid.show("A pikachu appeared nearby !", ToastAndroid.SHORT);
+  };
+ 
+  const id = auth().currentUser.uid;
+ 
+  const Userid = auth().currentUser.uid;
+  const docRef= firestore().collection('Users').doc(id);
   
+ 
+  const[name,setName]=useState("")
   const [tasks, setTasks] = useState([]); 
   // useEffect(() => {
   //   var g = ""
@@ -49,9 +59,23 @@ export default function Tasks({navigation}) {
     return mydate;
 }
 
+useEffect(() => {
+  async function subscriber() { 
+      await docRef.onSnapshot(querySnapshot=>{
+        const myname= querySnapshot.data().UserName
+        setName(myname)
+      });
+ }
+  
+  subscriber();
+  // Unsubscribe from events when no longer in use
+  return () => subscriber();
+
+
+}, []);
 
   useEffect(() => {
-    const subscriber = firestore()
+    async function subscriber() { await firestore().collection('Users').doc(Userid)
       .collection('Tasks')
       .where('Completed', '==',false)
       .onSnapshot(querySnapshot => {
@@ -67,9 +91,13 @@ export default function Tasks({navigation}) {
         setTasks(tasks);
        
       });
-
+    }
+    
+    subscriber();
     // Unsubscribe from events when no longer in use
     return () => subscriber();
+
+  
   }, []);
 
   {
@@ -89,12 +117,6 @@ export default function Tasks({navigation}) {
   
  // console.log(greet)
   
-  
- 
- 
-  
-
-
 
     const addTask=()=>{
      navigation.navigate('Form')
@@ -114,17 +136,28 @@ export default function Tasks({navigation}) {
         <View style={{flex:1}}>
         <Header
       containerStyle={styles.header}
-      placement="left"
-      centerComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
-      
-      rightComponent={<Icon name="bars" size={20} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
+      placement="right"
+      // centerComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
+      leftComponent={{ text: 'Listier', style: { color: '#fff' , fontFamily:'Oleo',fontSize:25} }}
+     
+      rightComponent={<Icon name="bars" size={20} style={{marginLeft:20}} color="white" onPress={() =>navigation.openDrawer()}></Icon>}
     />
     
-    {/* <View style={styles.cardtop}>
-       <Text style={{fontFamily:"Choco",fontSize:40}}>HI </Text>
-    </View> */}
+    <View style={styles.cardtop} >
+      <TouchableOpacity onPress={()=>ToastAndroid.show("Index Number : 17001994 \nRegistration Number : 2017/CS/199", ToastAndroid.LONG)}>
+      <Image
+        style={styles.tinyLogo}
+        source={require('../../../assets/logo/logotrans.png')}
+        
+      />
+      </TouchableOpacity>
+   
+       <Text style={{fontFamily:"Choco",fontSize:28}}>Hi ,{name} </Text>
+       {/* <Text style={{fontFamily:"Choco",fontSize:16s}}>Track what you want ...</Text> */}
+     
+    </View>
     <View style={{flexDirection:'row'}}>
-    <Icon style={{paddingTop:20,paddingLeft:20}} name="sun-o" size={30} color={COLORS.yellow}/>
+    <Icon style={{paddingTop:25,paddingLeft:20}} name="sun-o" size={20} color={COLORS.yellow}/>
    <Text style={styles.subtitle}>My Day</Text>
     </View>
      
@@ -137,7 +170,7 @@ export default function Tasks({navigation}) {
             
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('View', {title: item.Title,mykey:item.key,page:'TaskMain'});
+                navigation.push('View', {title: item.Title,mykey:item.key,id:Userid});
               }}
               style={{justifyContent:'space-between'}}>
               <View  style={{flexDirection: 'row'}}>
@@ -146,11 +179,13 @@ export default function Tasks({navigation}) {
                 <Icon color={COLORS.primary} name="circle" size={10} style={{alignSelf:'center',padding:20}} />
                 <Text style={styles.minetext}>{item.Title}</Text>
              
-            <Text style={{alignSelf:'center',marginTop:10}}>{item.Duration?item.Duration:null}</Text>
+            
               </View>
             </TouchableOpacity>
+
           )}
         />
+          {/* <Button title="Toggle Toast" onPress={() => showToast()} /> */}
   {/* <FlatList
         data={topics}
         
@@ -172,7 +207,7 @@ export default function Tasks({navigation}) {
         
        /> */}
     <Floatingbutton  onpressfun={addTask}/>
-   
+     
  
 
         </View>

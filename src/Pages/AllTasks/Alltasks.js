@@ -5,9 +5,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS} from '../../Constants';
 
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 export default function Alltasks({navigation}) {
-    const dbRef = firestore().collection('Tasks');
+  const Userid = auth().currentUser.uid;
+    const dbRef = firestore().collection('Users').doc(Userid).collection('Tasks');
     const [tasks, setTasks] = useState([]); 
     const page = 'All Tasks';
 
@@ -49,10 +51,10 @@ export default function Alltasks({navigation}) {
             //  <LiCard item={item} pressHandler={pressHandler}/>
             
             <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('View', {title: item.Title,mykey:item.key,page:page});
-              }}
-              style={{justifyContent:'space-between'}}>
+            onPress={() => {
+              navigation.navigate('View', {title: item.Title,mykey:item.key,id:Userid});
+            }}
+             >
               <View  style={styles.card}>
               
                

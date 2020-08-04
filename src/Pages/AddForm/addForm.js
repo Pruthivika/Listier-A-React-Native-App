@@ -1,5 +1,6 @@
 import React ,{useState}from 'react'
-import { StyleSheet, Text, View,Button,TextInput,Picker ,DatePickerAndroid,TouchableOpacity,TouchableWithoutFeedback,Keyboard } from 'react-native'
+import { StyleSheet, Text, View,Button,TextInput,Picker ,
+  DatePickerAndroid,TouchableOpacity,TouchableWithoutFeedback,Keyboard,ToastAndroid } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLORS } from '../../Constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -7,10 +8,26 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import { set } from 'react-native-reanimated';
 import { detach } from 'redux-saga';
+import { GoogleSignin } from '@react-native-community/google-signin';
 
 
+import auth from '@react-native-firebase/auth';
 export default function AddForm({navigation}) {
-  const dbRef = firestore().collection('Tasks');
+
+  const myAuth = auth();
+  // auth().onAuthStateChanged((user) => {
+  //   if (user) {
+  //     console.log('User email: ', user.email);
+  //     // console.log('id' ,user.uid );
+  //     setUid(user.uid);
+
+  //   }
+  // });
+  // const [userId,setUid]=useState("");
+  // console.log(authForDefaultApp.currentUser.uid)
+  const Userid = myAuth.currentUser.uid;
+  const docRef = firestore().collection('Users').doc(Userid);
+ 
   // const [todo,setTodo] =useState({
   //   Title:"",
   //   Description:"",
@@ -28,7 +45,8 @@ export default function AddForm({navigation}) {
   const storeUser=()=>{
   
     
-    dbRef.add({
+    docRef.collection('Tasks')
+    .add({
       Title: title,
       Description:desc,
       Completed:false,
@@ -43,7 +61,9 @@ export default function AddForm({navigation}) {
       setMy("");
       setTime("");
       
-    })
+    });
+    ToastAndroid.show("Task Added Successfully", ToastAndroid.SHORT);
+    
   }
   
 

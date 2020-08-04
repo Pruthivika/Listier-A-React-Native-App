@@ -1,13 +1,18 @@
 import React,{useState,useEffect} from 'react'
-import { StyleSheet, Text, View ,FlatList,TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View ,FlatList,TouchableOpacity,ToastAndroid} from 'react-native';
 import { Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS} from '../../Constants';
 
 import firestore from '@react-native-firebase/firestore';
 
+import auth from '@react-native-firebase/auth';
 export default function Completed({navigation}) {
-  const dbRef = firestore().collection('Tasks');
+
+  const Userid = auth().currentUser.uid;
+  console.log(Userid);
+  const docRef = firestore().collection('Users').doc(Userid).collection('Tasks');
+  
     const [tasks, setTasks] = useState([]); 
     const FormatDate = (dateobj)=>{
         var month = dateobj.getUTCMonth() + 1; //months from 1-12
@@ -24,24 +29,28 @@ export default function Completed({navigation}) {
     // }
 
     useEffect(() => {
-        const subscriber = dbRef
-          .where('Completed', '==',true)
-          .onSnapshot(querySnapshot => {
-            const tasks = [];
-      
-            querySnapshot.forEach(documentSnapshot => {
-              tasks.push({
-                ...documentSnapshot.data(),
-                key: documentSnapshot.id,
-              });
-            });
-          
-            setTasks(tasks);
-           
+      async function subscriber() { await firestore().collection('Users').doc(Userid)
+      .collection('Tasks')
+      .where('Completed', '==',true)
+      .onSnapshot(querySnapshot => {
+        const tasks = [];
+  
+        querySnapshot.forEach(documentSnapshot => {
+          tasks.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
           });
+        });
+      
+        setTasks(tasks);
+       
+      });
+    }
     
-        // Unsubscribe from events when no longer in use
-        return () => subscriber();
+    subscriber();
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+
       }, []);
 
     return (
@@ -68,12 +77,12 @@ export default function Completed({navigation}) {
                <View style={{flexDirection:'column'}}>
              <Text style={styles.title}>{item.Title}</Text>
              <Text style={styles.desc}>Duration ~ {item.Duration?item.Duration:null}</Text>
-          <Text style={styles.desc2}>Created At: {FormatDate(item.CreatedDate.toDate())}</Text>
+          <Text style={styles.desc2}>Created At: {item.CreatedDate?FormatDate(item.CreatedDate.toDate()):null}</Text>
              <Text style={styles.desc2}>Completed At : {item.CompletedAt?FormatDate(item.CompletedAt.toDate()):null}</Text>
              <Text style={styles.desc}>{item.Description}</Text>
              </View>
 
-             <Icon style={{alignSelf:'flex-end'}} name="trash"  color={COLORS.white} size={20} onPress={()=>{dbRef.doc(item.key).delete()}} ></Icon>
+             <Icon style={{alignSelf:'flex-end'}} name="trash"  color={COLORS.white} size={20} onPress={()=>{docRef.doc(item.key).delete();  ToastAndroid.show("Deleted Successfully", ToastAndroid.SHORT);}} ></Icon>
              </View>
             </View>
           )}

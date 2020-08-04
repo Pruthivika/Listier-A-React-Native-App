@@ -1,3 +1,6 @@
+const H_MAX_HEIGHT = 150;
+const H_MIN_HEIGHT = 52;
+const H_SCROLL_DISTANCE = H_MAX_HEIGHT - H_MIN_HEIGHT;
 
 const COLORS = {
     black: 'black',
@@ -20,4 +23,4 @@ const COLORS = {
   };
 
 
-  export {COLORS};
+  export {COLORS,H_MAX_HEIGHT,H_SCROLL_DISTANCE,H_MIN_HEIGHT};

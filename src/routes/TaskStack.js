@@ -28,6 +28,7 @@ export default function TaskStack()
          <Stack.Screen name="Form" component={AddForm} options={{title:"Add Task",headerTitleStyle:{fontFamily:'Choco'}} }/>
          <Stack.Screen name="All Tasks" component={Alltasks} />
          <Stack.Screen name="View" component={TaskView} options={{headerShown:false}}  />
+        
        </Stack.Navigator>
       );
  

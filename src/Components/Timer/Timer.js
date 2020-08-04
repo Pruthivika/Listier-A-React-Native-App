@@ -4,6 +4,8 @@ import {COLORS} from '../../Constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 
+import auth from '@react-native-firebase/auth';
+
 const screen = Dimensions.get('window');
 const formatNumber = number =>`0${number}`.slice(-2);
 const getRemaining = (time)=>{
@@ -12,10 +14,12 @@ const getRemaining = (time)=>{
     return {mins:formatNumber(mins),secs:formatNumber(secs)};
 }
 export default function Timer({variant,mykey,done}){
-    const dbRef = firestore().collection('Tasks');
+
+    const Userid = auth().currentUser.uid;
+    const dbRef = firestore().collection('Users').doc(Userid).collection('Tasks');
     const [remainingSecs,setRemainingSecs]=useState(0);
     const [isActive,setIsActive] = useState(variant ? true : false); 
-    const [timeButton,setButton]=useState(false)
+    const [timeButton,setButton]=useState(false);
     const {mins,secs} = getRemaining(remainingSecs);
     // const [interval,setInterval]=useState("");
     const mine=`${mins}:${secs}`;
